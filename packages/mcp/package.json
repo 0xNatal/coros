@@ -1,0 +1,19 @@
+{
+	"name": "@coros/mcp",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"bin": {
+		"coros-mcp": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsc -b",
+		"dev": "tsx src/index.ts",
+		"start": "node ./dist/index.js"
+	},
+	"dependencies": {
+		"@coros/client": "workspace:*",
+		"@modelcontextprotocol/sdk": "^1.20.0",
+		"zod": "catalog:"
+	}
+}

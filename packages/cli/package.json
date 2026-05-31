@@ -1,0 +1,18 @@
+{
+	"name": "@coros/cli",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"bin": {
+		"coros": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsc -b",
+		"dev": "tsx src/index.ts",
+		"start": "node ./dist/index.js"
+	},
+	"dependencies": {
+		"@coros/client": "workspace:*",
+		"commander": "^14.0.0"
+	}
+}
