@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { CorosApiError, CorosValidationError } from "./errors.js";
+import { CorosApiError, CorosError, CorosValidationError } from "./errors.js";
 import { request } from "./http.js";
 
 const token = {
@@ -33,6 +33,7 @@ describe("request", () => {
 	it("returns typed data on success", async () => {
 		const result = await request("https://example.com/api", z.string(), {
 			token,
+			region: "eu",
 		});
 		expect(result).toBe("hello");
 	});
@@ -59,6 +60,7 @@ describe("request", () => {
 
 		await request("https://example.com/api", z.string(), {
 			token,
+			region: "eu",
 			yfheader: true,
 		});
 
@@ -73,6 +75,7 @@ describe("request", () => {
 
 		await request("https://example.com/api", z.string(), {
 			token,
+			region: "eu",
 			query: { from: "20260101", page: 1 },
 		});
 
@@ -84,14 +87,17 @@ describe("request", () => {
 	it("throws CorosApiError when result != 0000", async () => {
 		vi.stubGlobal("fetch", mockFetch(envelope(null, "1030")));
 		await expect(
-			request("https://example.com/api", z.string().nullable(), { token }),
+			request("https://example.com/api", z.string().nullable(), {
+				token,
+				region: "eu",
+			}),
 		).rejects.toBeInstanceOf(CorosApiError);
 	});
 
 	it("throws CorosValidationError when data does not match schema", async () => {
 		vi.stubGlobal("fetch", mockFetch(envelope(42)));
 		await expect(
-			request("https://example.com/api", z.string(), { token }),
+			request("https://example.com/api", z.string(), { token, region: "eu" }),
 		).rejects.toBeInstanceOf(CorosValidationError);
 	});
 
@@ -103,7 +109,13 @@ describe("request", () => {
 			} as unknown as Response),
 		);
 		await expect(
-			request("https://example.com/api", z.string(), { token }),
+			request("https://example.com/api", z.string(), { token, region: "eu" }),
 		).rejects.toBeInstanceOf(CorosValidationError);
+	});
+
+	it("throws CorosError when token is set but region is omitted", async () => {
+		await expect(
+			request("https://example.com/api", z.string(), { token }),
+		).rejects.toBeInstanceOf(CorosError);
 	});
 });

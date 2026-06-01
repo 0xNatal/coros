@@ -42,6 +42,17 @@ describe("CorosClient", () => {
 		await expect(client.getAccount()).rejects.toBeInstanceOf(CorosAuthError);
 	});
 
+	it("getAccount throws CorosAuthError when token is expired", async () => {
+		const store = new MemoryTokenStore();
+		await store.set({
+			accessToken: "t",
+			userId: "u",
+			expiresAt: Date.now() - 1,
+		});
+		const client = new CorosClient(store);
+		await expect(client.getAccount()).rejects.toBeInstanceOf(CorosAuthError);
+	});
+
 	it("getAccount returns a profile after login", async () => {
 		const loginEnvelope = envelope({ accessToken: "tok", userId: "u1" });
 		const profileEnvelope = envelope({
@@ -78,6 +89,10 @@ describe.skipIf(!email || !password)("CorosClient integration", () => {
 		await client.login(String(email), String(password));
 		expect(await store.isValid()).toBe(true);
 		const profile = await client.getAccount();
+		console.log(
+			"[integration] account/query response:",
+			JSON.stringify(profile, null, 2),
+		);
 		expect(typeof profile.userId).toBe("string");
 		expect(typeof profile.email).toBe("string");
 	});

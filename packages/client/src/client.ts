@@ -41,6 +41,9 @@ export class CorosClient {
 		if (!data) {
 			throw new CorosAuthError("Not authenticated — call login() first");
 		}
+		if (Date.now() >= data.expiresAt) {
+			throw new CorosAuthError("Session expired — call login() again");
+		}
 		return data;
 	}
 }

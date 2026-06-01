@@ -63,12 +63,13 @@ export async function request<T extends z.ZodTypeAny>(
 	};
 
 	if (token) {
-		const regionCode =
-			region !== undefined
-				? REGION_COOKIE_CODES[region]
-				: REGION_COOKIE_CODES.eu;
+		// region must always be passed alongside token — there is no safe default
+		// because US/Asia tokens fail silently with the wrong cookie code.
+		if (region === undefined) {
+			throw new CorosError("region must be provided when token is set");
+		}
 		headers.accessToken = token.accessToken;
-		headers.Cookie = `CPL-coros-token=${token.accessToken}; CPL-coros-region=${regionCode}`;
+		headers.Cookie = `CPL-coros-token=${token.accessToken}; CPL-coros-region=${REGION_COOKIE_CODES[region]}`;
 	}
 
 	if (yfheader && token) {
