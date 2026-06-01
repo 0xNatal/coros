@@ -40,7 +40,7 @@ export const dailyRecordSchema = z
 		tiredRateNew: z.number().optional(),
 		tiredRateNewZoneList: z.array(z.unknown()).optional(),
 		tiredRateStateNew: z.number().int().optional(),
-		/** HRV interval percentages relative to personal baseline (RMSSD ms). */
+		/** Raw HRV interval samples (RMSSD ms). */
 		sleepHrvIntervalList: z.array(z.number()).optional(),
 		/** VO2max estimate (mL/kg/min). Sparse — only after qualifying run. */
 		vo2max: z.number().optional(),

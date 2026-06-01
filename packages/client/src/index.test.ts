@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
 	CorosClient,
 	getActivityDetail,
+	getDailyMetrics,
+	getDayDetail,
 	getTrainingSchedule,
+	getTrainingSummary,
 	listActivities,
 	VERSION,
 } from "./index.js";
@@ -20,5 +23,8 @@ describe("index exports", () => {
 		expect(typeof listActivities).toBe("function");
 		expect(typeof getActivityDetail).toBe("function");
 		expect(typeof getTrainingSchedule).toBe("function");
+		expect(typeof getDayDetail).toBe("function");
+		expect(typeof getDailyMetrics).toBe("function");
+		expect(typeof getTrainingSummary).toBe("function");
 	});
 });

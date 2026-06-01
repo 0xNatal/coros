@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CorosClient } from "../../client.js";
-import { envelope } from "../../test-helpers.js";
+import { envelope, toYYYYMMDD } from "../../test-helpers.js";
 import type { TokenData } from "../../token-store.js";
 import { MemoryTokenStore } from "../../token-store.js";
 import type { Region } from "../../types.js";
@@ -162,10 +162,6 @@ describe.skipIf(!email || !password)("getDayDetail integration", () => {
 		const today = new Date();
 		const twoWeeksAgo = new Date(today);
 		twoWeeksAgo.setDate(today.getDate() - 14);
-
-		function toYYYYMMDD(d: Date): string {
-			return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-		}
 
 		const from = toYYYYMMDD(twoWeeksAgo);
 		const to = toYYYYMMDD(today);

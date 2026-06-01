@@ -17,7 +17,7 @@ const REGION: Region = "eu";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("getTrainingSummary", () => {
-	it("calls analyse/query with no query params", async () => {
+	it("calls analyse/query with no query params and no yfheader", async () => {
 		const spy = vi.fn().mockResolvedValue({
 			json: () =>
 				Promise.resolve(
@@ -28,9 +28,14 @@ describe("getTrainingSummary", () => {
 
 		await getTrainingSummary(TOKEN, REGION);
 
-		const [capturedUrl] = spy.mock.calls[0] as [string];
+		const [capturedUrl, capturedInit] = spy.mock.calls[0] as [
+			string,
+			RequestInit,
+		];
 		expect(capturedUrl).toContain("/analyse/query");
 		expect(capturedUrl).not.toContain("?");
+		const headers = capturedInit.headers as Record<string, string>;
+		expect(headers.yfheader).toBeUndefined();
 	});
 
 	it("returns sportStatistic array", async () => {
@@ -97,6 +102,8 @@ describe.skipIf(!email || !password)("getTrainingSummary integration", () => {
 			`[integration] sportStatistic: ${result.sportStatistic?.length ?? 0} sports`,
 		);
 		for (const s of result.sportStatistic ?? []) {
+			expect(typeof s.sportType).toBe("number");
+			expect(typeof s.count).toBe("number");
 			console.log(
 				`[integration]   sportType=${s.sportType} count=${s.count} distance=${s.distance}m`,
 			);
