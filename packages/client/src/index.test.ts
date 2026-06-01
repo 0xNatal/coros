@@ -1,6 +1,24 @@
-import { expect, test } from "vitest";
-import { VERSION } from "./index.js";
+import { describe, expect, it } from "vitest";
+import {
+	CorosClient,
+	getActivityDetail,
+	getTrainingSchedule,
+	listActivities,
+	VERSION,
+} from "./index.js";
 
-test("exposes a version", () => {
-	expect(VERSION).toBe("0.0.0");
+describe("index exports", () => {
+	it("exposes a version", () => {
+		expect(VERSION).toBe("0.0.0");
+	});
+
+	it("exports CorosClient", () => {
+		expect(typeof CorosClient).toBe("function");
+	});
+
+	it("exports endpoint functions", () => {
+		expect(typeof listActivities).toBe("function");
+		expect(typeof getActivityDetail).toBe("function");
+		expect(typeof getTrainingSchedule).toBe("function");
+	});
 });

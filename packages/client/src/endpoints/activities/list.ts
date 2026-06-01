@@ -1,56 +1,13 @@
 import { z } from "zod";
 import { request } from "../../http.js";
+import {
+	type ActivitySummary,
+	activitySummarySchema,
+} from "../../schemas/activity.js";
 import type { TokenData } from "../../token-store.js";
 import { REGION_BASE_URLS, type Region } from "../../types.js";
 
-// Exported so detail.ts and the future schemas/activity.ts consolidation can reuse it.
-export const activitySummarySchema = z
-	.object({
-		/** Activity ID — always a string in activity/query (live-verified).
-		 *  Note: dashboard/query returns labelId as an integer — use labelIdStr there. */
-		labelId: z.string(),
-		name: z.string(),
-		device: z.string().optional(),
-		deviceId: z.string().optional(),
-		imageUrl: z.string().optional(),
-		/** Lang-Schema sportType (e.g. 100 = Running, 200 = Road Bike). */
-		sportType: z.number().int(),
-		mode: z.number().int().optional(),
-		subMode: z.number().int().optional(),
-		/** UTC Unix seconds (10-digit int). */
-		startTime: z.number().int(),
-		/** UTC Unix seconds. */
-		endTime: z.number().int(),
-		/** 15-min units from UTC, e.g. 8 = UTC+2. */
-		startTimezone: z.number().int().optional(),
-		endTimezone: z.number().int().optional(),
-		/** Meters. */
-		distance: z.number().optional(),
-		/** Seconds. */
-		totalTime: z.number().int().optional(),
-		/** Seconds. */
-		workoutTime: z.number().int().optional(),
-		/** s/km (running pace). */
-		avgSpeed: z.number().optional(),
-		adjustedPace: z.number().optional(),
-		avgHr: z.number().int().optional(),
-		maxHr: z.number().int().optional(),
-		avgPower: z.number().optional(),
-		np: z.number().optional(),
-		avgCadence: z.number().optional(),
-		cadence: z.number().optional(),
-		step: z.number().int().optional(),
-		/** Raw calorie value — divide by 1000 for kcal. */
-		calorie: z.number().int().optional(),
-		trainingLoad: z.number().optional(),
-		ascent: z.number().optional(),
-		descent: z.number().optional(),
-		totalDescent: z.number().optional(),
-		unitType: z.number().int().optional(),
-	})
-	.passthrough();
-
-export type ActivitySummary = z.infer<typeof activitySummarySchema>;
+export type { ActivitySummary };
 
 // When count == 0 the API omits pageNumber/totalPage/dataList entirely (live-verified).
 const activityPageSchema = z.object({
