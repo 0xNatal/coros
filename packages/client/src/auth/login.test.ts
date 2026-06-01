@@ -46,7 +46,7 @@ describe("login", () => {
 		const data = await store.get();
 		expect(data?.accessToken).toBe("mytoken");
 		expect(data?.userId).toBe("42");
-		expect(data?.expiresAt).toBeGreaterThan(Date.now());
+		expect(data?.expiresAt).toBe(Number.MAX_SAFE_INTEGER);
 	});
 
 	it("throws CorosAuthError when the API returns a non-0000 result", async () => {

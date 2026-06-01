@@ -5,8 +5,9 @@ import { request } from "../http.js";
 import type { TokenStore } from "../token-store.js";
 import { REGION_BASE_URLS, type Region } from "../types.js";
 
-/** Slightly under 24h to avoid using an about-to-expire token. */
-const TOKEN_TTL_MS = 23.5 * 60 * 60 * 1000;
+// The API does not return an expiry time — "~24h" is a community observation, not
+// a server-provided value. We store MAX_SAFE_INTEGER and let a CorosAuthError
+// (result != "0000") signal actual expiry so callers can re-login.
 
 // Response body is 📖 (HAR-redacted) — validate only the fields we need,
 // allow extra profile fields through.
@@ -50,6 +51,6 @@ export async function login(
 	await store.set({
 		accessToken: data.accessToken,
 		userId: data.userId,
-		expiresAt: Date.now() + TOKEN_TTL_MS,
+		expiresAt: Number.MAX_SAFE_INTEGER,
 	});
 }

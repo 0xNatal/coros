@@ -149,9 +149,9 @@ Diese Regeln gelten in jeder Phase (Details in `CLAUDE.md`):
 
 **Liefergegenstände im `cli`-Paket:**
 
-- `src/token-store-keyring.ts` — `TokenStore` über `keyring` (oder `@napi-rs/keyring`).
-- `src/token-store-encrypted-file.ts` — Fallback mit AES-256-GCM, maschinengebundenem Key (cygnusbs `encrypted_store.py` als Vorlage).
-- `src/token-store-chain.ts` — Chain: Env-Var → Keyring → Encrypted File.
+- `src/token-store-env.ts` — liest `COROS_ACCESS_TOKEN`/`COROS_USER_ID`/`COROS_TOKEN_EXPIRES_AT`, read-only.
+- `src/token-store-json-file.ts` — plain JSON, `mode 0o600`, kein Keyring/Encryption-Addon (Web-API-Token läuft in ~24 h ab — reicht).
+- `src/token-store-chain.ts` — Chain: Env-Var → JSON-File.
 - `src/commands/auth.ts` — interaktiver Login (prompts), schreibt in Chain-Store.
 - `src/commands/auth-status.ts` — eingeloggt? wie lange gültig? welche Region?
 - `src/commands/auth-clear.ts` — alle Stores leeren.
