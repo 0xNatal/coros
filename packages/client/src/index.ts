@@ -1,5 +1,7 @@
 export const VERSION = "0.0.0";
 
+export { logout } from "./auth/logout.js";
+
 export type { AccountProfile } from "./client.js";
 export { CorosClient } from "./client.js";
 export { getActivityDetail } from "./endpoints/activities/detail.js";
