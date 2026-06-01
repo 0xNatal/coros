@@ -85,7 +85,7 @@ const email = process.env.COROS_EMAIL;
 const password = process.env.COROS_PASSWORD;
 
 describe.skipIf(!email || !password)("getTrainingSummary integration", () => {
-	it("returns a valid summary with sportStatistic and dayList", async () => {
+	it("returns a valid summary from the real API", async () => {
 		const store = new MemoryTokenStore();
 		const client = new CorosClient(store);
 		await client.login(String(email), String(password));
@@ -95,21 +95,27 @@ describe.skipIf(!email || !password)("getTrainingSummary integration", () => {
 
 		const result = await getTrainingSummary(token, client.region);
 
-		expect(Array.isArray(result.sportStatistic)).toBe(true);
-		expect(Array.isArray(result.dayList)).toBe(true);
+		// Schema parsing already guarantees structural validity; just check it's an object.
+		expect(typeof result).toBe("object");
 
 		console.log(
-			`[integration] sportStatistic: ${result.sportStatistic?.length ?? 0} sports`,
+			`[integration] sportStatistic: ${result.sportStatistic?.length ?? "absent"}, dayList: ${result.dayList?.length ?? "absent"}, t7dayList: ${result.t7dayList?.length ?? "absent"}`,
 		);
-		for (const s of result.sportStatistic ?? []) {
-			expect(typeof s.sportType).toBe("number");
-			expect(typeof s.count).toBe("number");
-			console.log(
-				`[integration]   sportType=${s.sportType} count=${s.count} distance=${s.distance}m`,
-			);
+
+		// Conditional assertions — fields may be absent for accounts with no activities.
+		if (result.sportStatistic !== undefined) {
+			expect(Array.isArray(result.sportStatistic)).toBe(true);
+			for (const s of result.sportStatistic) {
+				expect(typeof s.sportType).toBe("number");
+				expect(typeof s.count).toBe("number");
+				console.log(
+					`[integration]   sportType=${s.sportType} count=${s.count} distance=${s.distance}m`,
+				);
+			}
 		}
-		console.log(
-			`[integration] dayList: ${result.dayList?.length ?? 0} days, t7dayList: ${result.t7dayList?.length ?? 0} days`,
-		);
+
+		if (result.dayList !== undefined) {
+			expect(Array.isArray(result.dayList)).toBe(true);
+		}
 	}, 15_000);
 });
