@@ -5,6 +5,8 @@
 > **Was diese Datei NICHT ist:** eine Endpunkt-Doku. Methode, Transport, Header, Felder und Einheiten stehen ausschließlich in `coros-api-reference.md` — dort über denselben Pfad nachschlagen (`### METHODE /pfad`). Bei Widerspruch gewinnt die Reference.
 >
 > **Für Claude Code:** Was hier nicht als „Tool", „intern" oder „optional" steht, wird **nicht** gebaut. „Out of scope" ist eine bewusste Entscheidung, kein vergessener Endpunkt — nicht ungefragt hinzufügen.
+>
+> **v1 ist read-only.** Alle schreibenden Endpunkte und Workout-Builder (ehemals Phase 4) sind auf einen späteren Meilenstein verschoben. Die Encoding-Vorarbeit (Payload-Struktur, Strength-Encoding, sortNo-Schema) ist vollständig in `coros-api-reference.md` dokumentiert und wartet dort auf Implementierung.
 
 ## Rollen-Legende
 
@@ -24,24 +26,20 @@
 |---|:--:|---|---|---|
 | `/account/login` | POST | Intern | `login()` | — (Auth-Bootstrap) |
 | `/account/logout` | GET | Intern | `logout()` | — (CLI `auth-clear`) |
-| `/account/query` | GET | Intern | `getAccount()` | backt `check_auth` (Login-Status/Region); liefert FTP/LTHR/LTSP + Zonen zum Bauen von Workouts |
-| `/team/user/teamlist` | GET | Intern | `getTeams()` | — (liefert `teamId` für `exercise/query` + `schedule/querysum`) |
+| `/account/query` | GET | Intern | `getAccount()` | backt `check_auth` (Login-Status/Region) |
+| `/team/user/teamlist` | GET | Intern | `getTeams()` | — (liefert `teamId` für `schedule/querysum`) |
 | `/activity/query` | GET | **Tool** | `listActivities()` | `list_activities` |
 | `/activity/detail/query` | POST | **Tool** | `getActivityDetail()` | `get_activity_detail` |
 | `/analyse/dayDetail/query` | GET | **Tool** | `getDailyMetrics()` | `get_daily_metrics` (Kern: HRV, RHR, VO2max, TL) |
-| `/dashboard/query` | GET | **Tool** | `getDashboard()` | speist `get_daily_metrics` (HRV-Detail/Recovery); ggf. eigener HRV-Snapshot |
-| `/training/exercise/query` | GET | Intern | `listExercises()` | `list_exercises` (Übungskatalog für Strength) |
-| `/training/program/query` | POST | **Tool** | `listWorkoutTemplates()` | `list_workout_templates` |
-| `/training/program/add` | POST | **Tool** | `saveWorkoutTemplate()` / `saveStrengthWorkoutTemplate()` | `save_workout_template` / `save_strength_workout_template` |
-| `/training/program/delete` | POST | Intern | `deleteWorkoutTemplate()` | — (Client-Methode ab Phase 4; kein MCP-Tool in v1) |
-| `/training/schedule/query` | GET | **Tool** | `getTrainingSchedule()` | `list_planned_activities` **+** Enrichment nach POST (server-IDs nachschlagen) |
-| `/training/schedule/update` | POST | **Tool** | `scheduleWorkout()` / `scheduleStrengthWorkout()` / `scheduleWorkoutTemplate()` / `removeScheduledWorkout()` | `schedule_workout` / `schedule_strength_workout` / `schedule_workout_template` / `remove_scheduled_workout` |
+| `/dashboard/query` | GET | **Tool** | `getDashboard()` | `get_daily_metrics` (HRV-Detail/Recovery-Snapshot) |
+| `/training/program/query` | POST | **Tool** | `listWorkoutTemplates()` | `list_workout_templates` (nur lesend) |
+| `/training/schedule/query` | GET | **Tool** | `getTrainingSchedule()` | `list_planned_activities` |
 
 ### Versteckte Abhängigkeiten (nicht als verzichtbar einstufen)
 
-- `account/query` sieht wie „nur Profil" aus, ist aber die Quelle für FTP/LTHR/LTSP + Zonen → ohne sie kein vernünftiger Workout-Builder.
-- `team/user/teamlist` liefert die `teamId`, die `exercise/query` und `schedule/querysum` als Param erwarten.
-- `schedule/query` ist auch ohne Tool-Rolle nötig: nach `schedule/update` kommen die server-vergebenen `planId`/`planProgramId` nicht in der POST-Response zurück — die holt man hierüber (Enrichment).
+- `account/query` sieht wie „nur Profil" aus, liefert aber FTP/LTHR/LTSP + Zonen — relevant für den späteren Workout-Builder-Meilenstein.
+- `team/user/teamlist` liefert die `teamId`, die `schedule/querysum` als Param erwartet.
+- `schedule/query` ist in v1 das Lese-Tool `list_planned_activities`; die Enrichment-Logik nach `schedule/update` (server-IDs nachschlagen) gehört zum späteren Schreib-Meilenstein.
 
 ---
 
@@ -62,11 +60,15 @@
 
 ---
 
-## Später (eigene Ausbaustufe)
+## Später (eigener Meilenstein: Schreib-Features / Workout-Builder)
 
 | Endpoint | M | Grund |
 |---|:--:|---|
-| `/training/plan/query` | POST | Mehrwöchige Pläne — v1 fokussiert One-Off-Scheduling |
+| `/training/exercise/query` | GET | Übungskatalog — Builder-Abhängigkeit; Encoding-Vorarbeit in Reference |
+| `/training/program/add` | POST | Workout-Templates erstellen; Payload-Struktur in Reference |
+| `/training/program/delete` | POST | Workout-Templates löschen |
+| `/training/schedule/update` | POST | Workouts planen / entfernen (dual-purpose: add + delete) |
+| `/training/plan/query` | POST | Mehrwöchige Pläne |
 | `/training/plan/add` | POST | dito |
 | `/training/plan/detail` | GET | dito |
 

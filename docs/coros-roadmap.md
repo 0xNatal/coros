@@ -119,7 +119,9 @@ Diese Regeln gelten in jeder Phase (Details in `CLAUDE.md`):
 
 ---
 
-### Phase 4: Workout-CRUD und Scheduling (Schreiboperationen)
+### Phase 4: Workout-CRUD und Scheduling (Schreiboperationen) — VERSCHOBEN
+
+> **Späterer Meilenstein.** v1 ist read-only; dieser Block wird nicht als nächstes implementiert. Der Inhalt bleibt vollständig als Plan erhalten. Die Encoding-Vorarbeit (Payload-Struktur, Strength-Encoding, sortNo-Schema, Race-Condition-Quirk) liegt in `coros-api-reference.md` — nicht neu erfinden, nur nachschlagen.
 
 **Ziel:** Workouts erstellen, planen, löschen. Heikelster Teil — Schreibzugriff auf einen echten Account.
 
@@ -164,25 +166,24 @@ Diese Regeln gelten in jeder Phase (Details in `CLAUDE.md`):
 
 ---
 
-### Phase 6: MCP-Server
+### Phase 6: MCP-Server (read-only, v1)
 
-**Ziel:** Claude (oder ein anderer MCP-Host) kann die Coros-Daten konversationell abfragen und manipulieren.
+**Ziel:** Claude (oder ein anderer MCP-Host) kann Coros-Trainingsdaten konversationell abfragen. v1 exponiert ausschließlich lesende Tools — Schreib-Tools (`save_*`, `schedule_*`, `remove_*`) kommen mit dem späteren Workout-Meilenstein.
 
 **Liefergegenstände im `mcp`-Paket:**
 
 - `src/server.ts` — `Server` aus `@modelcontextprotocol/sdk`, stdio transport, Tool-Registry.
-- `src/auth-bootstrap.ts` — beim Start: erst Env-Vars (`COROS_EMAIL`+`COROS_PASSWORD`), sonst Token-Store, sonst Fehler.
-- `src/tools/` — `get-help`, `get-daily-metrics`, `list-activities`, `get-activity-detail`, `list-workout-templates`, `save-workout-template`, `save-strength-workout-template`, `schedule-workout`, `schedule-strength-workout`, `schedule-workout-template`, `remove-scheduled-workout`, `list-planned-activities`, `list-exercises`, `check-auth`.
+- `src/auth-bootstrap.ts` — beim Start: erst Env-Vars (`COROS_EMAIL`+`COROS_PASSWORD`), dann Re-Login; Token in `MemoryTokenStore`.
+- `src/tools/` — `check-auth`, `get-help`, `get-daily-metrics`, `list-activities`, `get-activity-detail`, `get-dashboard` (HRV-/Recovery-Snapshot), `list-planned-activities`, `list-workout-templates`.
 
-**Wichtige UX-Details (von cygnusb übernehmen):**
+**Wichtige UX-Details:**
 
-- **Save-vs-Schedule-Disambiguierung:** Tool-Descriptions weisen die KI an, im Zweifel zu fragen, ob ein wiederverwendbares Template oder ein One-Off gemeint ist. Save-Tools mit deutlichem Klartext-Warnhinweis (z. B. `WARNING: persists indefinitely`) — kein Emoji.
-- **IDs für späteres Löschen:** Schedule-Antworten enthalten `plan_id`/`id_in_plan`/`plan_program_id`. Schlägt die Enrichment-GET fehl (siehe Phase 4), `warning`-Key in die Antwort setzen, damit Claude die IDs per `list_planned_activities` nachschlägt.
-- **Auto-Retry bei Token-Expiry:** erster Call, bei Fehlschlag Re-Login aus Env-Vars, dann ein einziges Retry (cygnusbs `_run_with_auth`).
+- **Auto-Retry bei Token-Expiry:** erster Call, bei `CorosAuthError` Re-Login aus Env-Vars, dann ein einziges Retry (Muster: cygnusbs `_run_with_auth`).
+- **Keine Schreib-Tools in v1** — Tool-Descriptions klar formulieren, damit die KI nicht nach Schreib-Operationen sucht.
 
-**Reference-Anker:** keine neuen Endpunkte — die Tools sind Wrapper um die Client-Funktionen aus Phasen 2–4. cygnusbs `server.py` als exhaustive Vorlage, inkl. der KI-gerichteten Doc-Strings.
+**Reference-Anker:** keine neuen Endpunkte — die Tools sind Wrapper um die Client-Funktionen aus Phasen 2–3. cygnusbs `server.py` als Vorlage für KI-gerichtete Doc-Strings (nur die lesenden Tools übernehmen).
 
-**Definition of Done:** In Claude Desktop „zeig mir meine HRV-Trends der letzten 4 Wochen" → sinnvolle Antwort. „plane mir nächsten Dienstag einen 90-Minuten Sweet-Spot" → landet im Coros-Kalender. Commit, **halt.**
+**Definition of Done:** In Claude Desktop „zeig mir meine HRV-Trends der letzten 4 Wochen" → sinnvolle Antwort mit echten Daten. Commit, **halt.**
 
 ---
 
@@ -218,11 +219,9 @@ Wenn alles steht: Rate-Limiting bei Bulk-Schedule-Operationen; bessere Fehlermel
 
 ## Offene Fragen / spätere Entscheidungen
 
-- **Daily-Metrics-Architektur:** ein Call oder Merge? → Verifikations-Schritt in Phase 3 entscheidet.
-- **Token-Storage:** Keyring + Encrypted-File-Fallback oder nur Encrypted-File mit maschinengebundenem Key? → Entscheidung in Phase 5.
 - **Caching ja/nein:** erst bei realem Bedarf (Phase 7).
 - **npm-Publishing:** privat oder öffentlich? Falls öffentlich: Versionierung/Changelog/Release-Workflow.
-- **Test-Account:** vor Phase 4 klären.
+- **Test-Account für Schreib-Meilenstein:** vor Phase 4 klären — Strategie, den echten Trainingsplan nicht zuzumüllen.
 - **Region-Abdeckung:** EU + US sicher, Asia Vermutung — bei Asia-Nutzer `teamcnapi.coros.com` einmal verifizieren.
 
 ---
@@ -240,8 +239,8 @@ Wenn alles steht: Rate-Limiting bei Bulk-Schedule-Operationen; bessere Fehlermel
 - [x] Phase 1 — Client-Fundament (Login, TokenStore, http)
 - [x] Phase 2 — Read-Endpunkte (Activities + Training Schedule)
 - [x] Phase 3 — Daily Metrics (Verifikation → HRV, RHR, VO2max)
-- [ ] Phase 4 — Workouts (Payload-Tests → Templates + Schedule + Remove)
-- [ ] Phase 5 — CLI (Auth + Debug)
+- [~] Phase 4 — Workouts (verschoben, späterer Meilenstein)
+- [x] Phase 5 — CLI (Auth + Debug)
 - [ ] Phase 6 — MCP-Server
 - [ ] Phase 7 — Cache (optional)
 - [ ] Phase 8 — Polish & Publishing
