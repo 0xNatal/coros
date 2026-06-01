@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CorosClient } from "../../client.js";
+import { envelope } from "../../test-helpers.js";
 import type { TokenData } from "../../token-store.js";
 import { MemoryTokenStore } from "../../token-store.js";
 import type { Region } from "../../types.js";
@@ -13,10 +14,6 @@ const TOKEN: TokenData = {
 };
 
 const REGION: Region = "eu";
-
-function envelope(data: unknown) {
-	return { apiCode: 200, message: "ok", result: "0000", data };
-}
 
 function makeActivity(
 	overrides: Partial<ActivitySummary> = {},

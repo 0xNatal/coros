@@ -1,11 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CorosClient } from "./client.js";
 import { CorosAuthError } from "./errors.js";
+import { envelope } from "./test-helpers.js";
 import { MemoryTokenStore } from "./token-store.js";
-
-function envelope(data: unknown, result = "0000") {
-	return { apiCode: 200, message: "ok", result, data };
-}
 
 function mockFetch(body: unknown) {
 	return vi.fn().mockResolvedValue({

@@ -9,7 +9,11 @@ import { REGION_BASE_URLS, type Region } from "../../types.js";
 export type { TrainingSchedule };
 
 export interface GetTrainingScheduleOptions {
-	/** Start of the range, YYYYMMDD format (e.g. "20260601"). */
+	/**
+	 * Start of the range, YYYYMMDD format (e.g. "20260601").
+	 * Note: uses YYYYMMDD strings, not Unix timestamps — the COROS schedule API
+	 * requires this format directly. Compare with listActivities which uses Unix seconds.
+	 */
 	from: string;
 	/** End of the range, YYYYMMDD format (e.g. "20260630"). */
 	to: string;

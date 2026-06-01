@@ -19,7 +19,6 @@ export type {
 	ActivitySummary,
 } from "./schemas/activity.js";
 export {
-	activityDetailSchema,
 	activityDetailSummarySchema,
 	activitySummarySchema,
 } from "./schemas/activity.js";

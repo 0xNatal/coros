@@ -18,11 +18,19 @@ const activityPageSchema = z.object({
 });
 
 export interface ListActivitiesOptions {
-	/** Only include activities with startTime >= from (Unix seconds, inclusive). */
+	/**
+	 * Only include activities with startTime >= from (Unix seconds, inclusive).
+	 * Note: these are Unix timestamps, unlike getTrainingSchedule which uses YYYYMMDD strings —
+	 * the difference reflects what each underlying COROS API endpoint actually accepts.
+	 */
 	from?: number;
-	/** Only include activities with startTime <= to (Unix seconds, inclusive). */
+	/**
+	 * Only include activities with startTime <= to (Unix seconds, inclusive).
+	 * Efficiency note: `to` filtering is client-side. Without `from`, the full activity
+	 * history is scanned page by page — for date-range queries, always provide both.
+	 */
 	to?: number;
-	/** Items per API page (default: 20). */
+	/** Items per API page (default: 20). Must be >= 1. */
 	size?: number;
 	/** Lang-Schema sportType IDs to filter. Omit or empty = all sports. */
 	sportTypes?: number[];
@@ -47,6 +55,8 @@ export async function listActivities(
 	region: Region,
 ): Promise<ActivitySummary[]> {
 	const { from, to, size = 20, sportTypes = [] } = options;
+	// Clamp silently: size=0 (falsy, bypasses default) would send an invalid API param.
+	const pageSize = size > 0 ? size : 20;
 	const baseUrl = `${REGION_BASE_URLS[region]}/activity/query`;
 	const modeList = sportTypes.length > 0 ? sportTypes.join(",") : undefined;
 
@@ -57,7 +67,7 @@ export async function listActivities(
 	do {
 		const query: Record<string, string | number | boolean> = {
 			pageNumber: page,
-			size,
+			size: pageSize,
 		};
 		if (modeList !== undefined) {
 			query.modeList = modeList;

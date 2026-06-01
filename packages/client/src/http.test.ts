@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { CorosApiError, CorosError, CorosValidationError } from "./errors.js";
 import { request } from "./http.js";
+import { envelope } from "./test-helpers.js";
 
 const token = {
 	accessToken: "tok32",
@@ -15,10 +16,6 @@ function mockFetch(body: unknown, status = 200) {
 		status,
 		json: () => Promise.resolve(body),
 	} as Response);
-}
-
-function envelope(data: unknown, result = "0000") {
-	return { apiCode: 200, message: "ok", result, data };
 }
 
 describe("request", () => {
