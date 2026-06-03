@@ -11,12 +11,13 @@ Gives AI assistants read access to your COROS training data — activities, HRV,
 
 ### Claude Code (VSCode Extension)
 
-Create or edit `~/.claude/mcp.json`:
+Add to `~/.claude.json` under `mcpServers`:
 
 ```json
 {
   "mcpServers": {
     "coros": {
+      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@0xnatal/coros-mcp"],
       "env": {
@@ -28,6 +29,8 @@ Create or edit `~/.claude/mcp.json`:
   }
 }
 ```
+
+Reload the VSCode window after saving.
 
 ### Claude Desktop
 

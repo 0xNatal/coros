@@ -33,7 +33,7 @@ This creates `packages/mcp/dist/index.js` — the standalone binary.
 
 ### 3. Connect to Claude Code
 
-Add the server to `~/.claude.json` under `mcpServers`:
+Add to `~/.claude.json` under `mcpServers` (this is where Claude Code stores user-level MCP servers):
 
 ```json
 {
