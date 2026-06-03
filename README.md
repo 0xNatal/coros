@@ -73,3 +73,60 @@ pnpm --filter @coros/cli run dev debug training-schedule --weeks 2
 pnpm test       # run all tests
 pnpm lint       # biome check
 ```
+
+---
+
+## Publishing to npm
+
+Once the local test works, publish `@0xnatal/coros-mcp` so it can be used via `npx` from any machine.
+
+### First time
+
+1. Create an account on [npmjs.com](https://www.npmjs.com) with username `0xnatal`
+2. Generate an npm access token: npmjs.com → Avatar → Access Tokens → Generate New Token (Automation)
+3. Add it as a GitHub secret: Repository → Settings → Secrets → Actions → `NPM_TOKEN`
+
+### Release (automated via GitHub Actions)
+
+```bash
+# 1. Bump the version in packages/mcp/package.json (e.g. 0.1.0 → 0.2.0)
+# 2. Commit
+git add packages/mcp/package.json
+git commit -m "chore(mcp): bump version to 0.2.0"
+
+# 3. Tag and push — the GitHub Actions workflow publishes automatically
+git tag v0.2.0
+git push && git push --tags
+```
+
+The workflow (`.github/workflows/publish.yml`) runs `pnpm build`, `pnpm test`, bundles the MCP server, and publishes to npm.
+
+### Release (manual)
+
+```bash
+pnpm build
+pnpm --filter @0xnatal/coros-mcp bundle
+cd packages/mcp
+npm publish --access public
+```
+
+### After publishing
+
+Users (and you on other machines) can connect without a local checkout:
+
+```json
+{
+  "mcpServers": {
+    "coros": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@0xnatal/coros-mcp"],
+      "env": {
+        "COROS_EMAIL": "you@example.com",
+        "COROS_PASSWORD": "yourpassword",
+        "COROS_REGION": "eu"
+      }
+    }
+  }
+}
+```
