@@ -1,9 +1,10 @@
 export const VERSION = "0.0.0";
 
 export { logout } from "./auth/logout.js";
-
 export type { AccountProfile } from "./client.js";
 export { CorosClient } from "./client.js";
+export type { AccountSummary } from "./endpoints/account/query.js";
+export { getAccount } from "./endpoints/account/query.js";
 export { getActivityDetail } from "./endpoints/activities/detail.js";
 export type { ListActivitiesOptions } from "./endpoints/activities/list.js";
 export { listActivities } from "./endpoints/activities/list.js";

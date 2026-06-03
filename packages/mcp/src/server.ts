@@ -2,9 +2,13 @@ import { VERSION } from "@coros/client";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { bootstrap } from "./auth-bootstrap.js";
+import { registerCheckAuth } from "./tools/check-auth.js";
+import { registerGetHelp } from "./tools/get-help.js";
 
-// Tool registration is filled in as each deliverable is added (Phase 6).
-function registerTools(_server: McpServer): void {}
+function registerTools(server: McpServer): void {
+	registerCheckAuth(server);
+	registerGetHelp(server);
+}
 
 export async function startServer(): Promise<void> {
 	await bootstrap();
