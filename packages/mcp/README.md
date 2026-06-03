@@ -1,9 +1,38 @@
 # coros-mcp
 
 MCP server for the [COROS Training Hub](https://trainingHub.coros.com) web API.
-Gives AI assistants (Claude Desktop, Claude Code, etc.) read access to your COROS training data.
+Gives AI assistants read access to your COROS training data — activities, HRV, recovery, planned workouts.
 
-## Quick start
+> Unofficial. Not affiliated with COROS.
+
+---
+
+## Setup
+
+### Claude Code (VSCode Extension)
+
+Create or edit `~/.claude/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "coros": {
+      "command": "npx",
+      "args": ["-y", "@0xnatal/coros-mcp"],
+      "env": {
+        "COROS_EMAIL": "you@example.com",
+        "COROS_PASSWORD": "yourpassword",
+        "COROS_REGION": "eu"
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Edit `~/.config/Claude/claude_desktop_config.json` (Linux) or
+`~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
 
 ```json
 {
@@ -23,7 +52,7 @@ Gives AI assistants (Claude Desktop, Claude Code, etc.) read access to your CORO
 
 `COROS_REGION`: `eu` | `us` | `asia` (default: `eu`)
 
-Alternatively, pass a pre-existing token directly (no login call):
+Alternatively, pass a pre-existing token directly (no login call on startup):
 
 ```json
 "env": {
@@ -32,6 +61,8 @@ Alternatively, pass a pre-existing token directly (no login call):
   "COROS_REGION": "eu"
 }
 ```
+
+---
 
 ## Available tools
 
@@ -46,8 +77,9 @@ Alternatively, pass a pre-existing token directly (no login call):
 | `list_planned_activities` | Planned workouts from the training calendar |
 | `list_workout_templates` | Saved workout templates (read-only) |
 
+---
+
 ## Notes
 
 - v1 is read-only. Creating or scheduling workouts is not yet supported.
-- Uses the unofficial COROS Training Hub web API — no affiliation with COROS.
-- Token is never logged or stored; credentials are only used to obtain a session token.
+- Token is never logged or stored beyond the running process.
