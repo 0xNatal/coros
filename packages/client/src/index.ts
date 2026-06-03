@@ -13,6 +13,13 @@ export { getDailyMetrics } from "./endpoints/analyse/daily-metrics.js";
 export type { GetDayDetailOptions } from "./endpoints/analyse/day-detail.js";
 export { getDayDetail } from "./endpoints/analyse/day-detail.js";
 export { getTrainingSummary } from "./endpoints/analyse/summary.js";
+export type { DashboardSnapshot } from "./endpoints/dashboard/query.js";
+export { getDashboard } from "./endpoints/dashboard/query.js";
+export type {
+	ListWorkoutTemplatesOptions,
+	WorkoutTemplate,
+} from "./endpoints/training-program/query.js";
+export { listWorkoutTemplates } from "./endpoints/training-program/query.js";
 export type { GetTrainingScheduleOptions } from "./endpoints/training-schedule/query.js";
 export { getTrainingSchedule } from "./endpoints/training-schedule/query.js";
 export {
