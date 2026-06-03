@@ -241,6 +241,6 @@ Wenn alles steht: Rate-Limiting bei Bulk-Schedule-Operationen; bessere Fehlermel
 - [x] Phase 3 — Daily Metrics (Verifikation → HRV, RHR, VO2max)
 - [~] Phase 4 — Workouts (verschoben, späterer Meilenstein)
 - [x] Phase 5 — CLI (Auth + Debug)
-- [ ] Phase 6 — MCP-Server
+- [x] Phase 6 — MCP-Server
 - [ ] Phase 7 — Cache (optional)
 - [ ] Phase 8 — Polish & Publishing
