@@ -1,0 +1,38 @@
+name: Publish coros-mcp to npm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (type-check)
+        run: pnpm build
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Bundle for publish
+        run: pnpm --filter coros-mcp bundle
+
+      - name: Publish to npm
+        run: pnpm --filter coros-mcp publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
