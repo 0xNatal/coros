@@ -1,11 +1,14 @@
 import { VERSION } from "@coros/client";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { bootstrap } from "./auth-bootstrap.js";
 
 // Tool registration is filled in as each deliverable is added (Phase 6).
 function registerTools(_server: McpServer): void {}
 
 export async function startServer(): Promise<void> {
+	await bootstrap();
+
 	const server = new McpServer({ name: "coros-mcp", version: VERSION });
 
 	registerTools(server);
