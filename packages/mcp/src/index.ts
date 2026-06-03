@@ -1,2 +1,9 @@
-// MCP server entry — wird befüllt wenn der client steht
-console.log("coros-mcp: not implemented yet");
+#!/usr/bin/env node
+import { startServer } from "./server.js";
+
+startServer().catch((err: unknown) => {
+	process.stderr.write(
+		`Fatal: ${err instanceof Error ? err.message : String(err)}\n`,
+	);
+	process.exit(1);
+});
