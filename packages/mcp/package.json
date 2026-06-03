@@ -1,5 +1,5 @@
 {
-	"name": "coros-mcp",
+	"name": "@0xnatal/coros-mcp",
 	"version": "0.1.0",
 	"description": "MCP server for the COROS Training Hub web API — exposes training data to AI assistants",
 	"keywords": [

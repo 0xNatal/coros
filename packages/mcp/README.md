@@ -10,7 +10,7 @@ Gives AI assistants (Claude Desktop, Claude Code, etc.) read access to your CORO
   "mcpServers": {
     "coros": {
       "command": "npx",
-      "args": ["-y", "coros-mcp"],
+      "args": ["-y", "@0xnatal/coros-mcp"],
       "env": {
         "COROS_EMAIL": "you@example.com",
         "COROS_PASSWORD": "yourpassword",
